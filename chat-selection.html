@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Selection - QuickConnect</title>
+    <link rel="stylesheet" href="chat-selection.css" />
+  </head>
+  <body>
+    <div class="chat-selection-container">
+      <h2>Select Who to Chat With</h2>
+
+      <!-- User Type Selection -->
+      <div class="user-type">
+        <button id="selectBusiness">Chat with Business</button>
+        <button id="selectCustomer">Chat with Customer</button>
+      </div>
+
+      <!-- Search Bar -->
+      <input
+        type="text"
+        id="searchUser"
+        placeholder="Search for a business or person..."
+      />
+
+      <!-- List of Available People/Businesses -->
+      <ul id="userList">
+        <!-- Dynamically added users -->
+      </ul>
+
+      <a href="userdashboard.html" class="back-btn">⬅ Back to Dashboard</a>
+    </div>
+
+    <script src="chat-selection.js"></script>
+  </body>
+</html>

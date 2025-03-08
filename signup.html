@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - QUICKCONECT</title>
+    <link rel="stylesheet" href="signup.css" />
+  </head>
+  <body>
+    <!-- Home Button -->
+    <a href="Landingpage.html" class="home-button">
+      <img src="quicklogo.png" alt="Home" />
+    </a>
+
+    <div class="animated-background">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+
+    <section class="signup-container">
+      <h2>Create Your Account</h2>
+      <p>Join QUICKCONECT as a Business or Customer</p>
+
+      <div class="signup-tabs">
+        <button id="businessTab" class="active" onclick="showForm('business')">
+          Sign Up as Business
+        </button>
+        <button id="customerTab" onclick="showForm('customer')">
+          Sign Up as Customer
+        </button>
+      </div>
+
+      <div class="form-container">
+        <!-- Business Signup Form -->
+        <form id="businessForm" class="signup-form">
+          <h3>Business Signup</h3>
+          <input type="text" placeholder="Business Name" required />
+          <input type="text" placeholder="Full Name" required />
+          <input type="email" placeholder="Email Address" required />
+          <input type="password" placeholder="Password" required />
+          <input type="password" placeholder="Confirm Password" required />
+          <button type="submit">Sign Up</button>
+        </form>
+
+        <!-- Customer Signup Form -->
+        <form id="customerForm" class="signup-form hidden">
+          <h3>Customer Signup</h3>
+          <input type="text" placeholder="Full Name" required />
+          <input type="email" placeholder="Email Address" required />
+          <input type="password" placeholder="Password" required />
+          <input type="password" placeholder="Confirm Password" required />
+          <button type="submit">Sign Up</button>
+        </form>
+      </div>
+
+      <p class="login-link">
+        Already have an account? <a href="Login.html">Login here</a>
+      </p>
+    </section>
+
+    <script src="signup.js"></script>
+    <script src="auth.js"></script>
+  </body>
+</html>

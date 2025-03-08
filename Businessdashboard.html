@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Business Dashboard - QuickConnect</title>
+    <link rel="stylesheet" href="business-dashboard.css" />
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>QuickConnect</h2>
+      <ul>
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">Bookings</a></li>
+        <li><a href="#">Messages</a></li>
+        <li><a href="#">Portfolio</a></li>
+        <li><a href="#">Reviews</a></li>
+        <li><a href="#">Settings</a></li>
+        <button id="logout-btn">Logout</button>
+        <button id="darkModeToggle">🌙 Themes</button>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <header>
+        <h2>Welcome, <span id="userName"></span></h2>
+      </header>
+
+      <section class="dashboard-cards">
+        <div class="card">
+          <h3>Total Bookings</h3>
+          <p>24</p>
+        </div>
+        <div class="card">
+          <h3>Pending Requests</h3>
+          <p>3</p>
+        </div>
+        <div class="card">
+          <h3>Ratings</h3>
+          <p>4.8 ⭐</p>
+        </div>
+        <div class="card">
+          <h3>New Messages</h3>
+          <p>5</p>
+        </div>
+        <div class="notification">New Message Received!</div>
+      </section>
+    </div>
+    <script>
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const body = document.body;
+
+      darkModeToggle.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+      });
+
+      //notification
+
+      function showNotification(message) {
+        const notification = document.createElement("div");
+        notification.classList.add("notification");
+        notification.innerText = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.remove();
+        }, 5000);
+      }
+
+      // Example Usage
+      setTimeout(() => {
+        showNotification("You have a new booking request!");
+      }, 3000);
+      document.addEventListener("DOMContentLoaded", function () {
+        // Retrieve the logged-in user from localStorage
+        const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+        if (!user) {
+          alert("No user found. Redirecting to login page.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        console.log("User Data Retrieved:", user);
+
+        // Display user details
+        document.getElementById("userName").textContent =
+          user.fullName || "User";
+      });
+    </script>
+    <script src="auth.js"></script>
+  </body>
+</html>

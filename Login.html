@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuickConnect - Login</title>
+    <link rel="stylesheet" href="login.css" />
+  </head>
+  <body>
+    <!-- Home Button -->
+    <a href="Landingpage.html" class="home-button">
+      <img src="quicklogo.png" alt="Home" />
+    </a>
+
+    <div class="animated-background">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+
+    <div class="login-container">
+      <h2>Login to QuickConnect</h2>
+
+      <!-- Toggle for Customer or Business Login -->
+      <div class="toggle-container">
+        <button class="toggle-btn active" id="customerBtn">Customer</button>
+        <button class="toggle-btn" id="businessBtn">Business</button>
+      </div>
+
+      <form id="loginForm">
+        <input type="email" placeholder="Email" required />
+        <input type="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+
+        <!-- Forgot Password -->
+        <p class="forgot-password">
+          <a href="forgotpassword.html">Forgot Password?</a>
+        </p>
+
+        <!-- OR Divider -->
+        <div class="or-divider">OR</div>
+
+        <!-- Social Login -->
+        <div class="social-login">
+          <button class="google-login">Login with Google</button>
+          <button class="facebook-login">Login with Facebook</button>
+        </div>
+      </form>
+
+      <p class="signup-link">
+        Don't have an account? <a href="signup.html">Sign up</a>
+      </p>
+    </div>
+
+    <script src="login.js"></script>
+    <script src="auth.js"></script>
+  </body>
+</html>

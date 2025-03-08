@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat - QuickConnect</title>
+    <link rel="stylesheet" href="chat.css" />
+  </head>
+  <body>
+    <div class="chat-container">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <span id="backBtn">⬅</span>
+        <h2 id="chatUser">Chat</h2>
+        <p id="statusIndicator" class="status">Offline</p>
+      </div>
+
+      <!-- Chat Messages -->
+      <div class="chat-box" id="chatBox">
+        <div class="welcome-msg">
+          <p>Start chatting now! 🎉</p>
+        </div>
+      </div>
+
+      <!-- Chat Input -->
+      <div class="chat-input">
+        <input
+          type="text"
+          id="messageInput"
+          placeholder="Type a message..."
+          autocomplete="off"
+        />
+        <button id="sendBtn">➤</button>
+      </div>
+    </div>
+
+    <script src="chat.js"></script>
+  </body>
+</html>

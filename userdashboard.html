@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Dashboard - QuickConnect</title>
+    <link rel="stylesheet" href="user-dashboard.css" />
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>QuickConnect</h2>
+      <ul>
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="booking.html">Find Services</a></li>
+        <li><a href="chat-selection.html">Chat Business/User</a></li>
+        <li><a href="#">Reviews</a></li>
+        <li><a href="#">Settings</a></li>
+        <button id="logout-btn">Logout</button>
+        <button id="darkModeToggle">🌙 Themes</button>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <header>
+        <h2>Welcome, <span id="userName"></span></h2>
+      </header>
+
+      <section class="dashboard-cards">
+        <div class="card">
+          <h3>Bookings</h3>
+          <p id="bookingCount">0</p>
+          <!-- Updated dynamically -->
+        </div>
+        <div class="card">
+          <h3>New Messages</h3>
+          <p>0</p>
+        </div>
+        <div class="card">
+          <h3>Services Reviewed</h3>
+          <p>0</p>
+        </div>
+        <div class="notification">Welcome!</div>
+      </section>
+
+      <!-- Booking List Section -->
+      <section class="bookings-list">
+        <h3>📅 Your Bookings</h3>
+        <ul id="bookingList"></ul>
+        <!-- Dynamic booking list -->
+      </section>
+    </div>
+
+    <script src="userdashboard.js"></script>
+    <script src="auth.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Retrieve the logged-in user from localStorage
+        const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+        if (!user) {
+          alert("No user found. Redirecting to login page.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        console.log("User Data Retrieved:", user);
+
+        // Display user details
+        document.getElementById("userName").textContent =
+          user.fullName || "User";
+      });
+    </script>
+  </body>
+</html>
