@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (logoutBtn) {
         logoutBtn.addEventListener("click", function () {
             localStorage.removeItem("currentUser");
-            window.location.href = "Landingpage.html";
+            window.location.href = "login.html";
         });
     }
 });
