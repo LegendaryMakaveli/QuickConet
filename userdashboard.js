@@ -18,12 +18,6 @@ darkModeToggle = document.getElementById("darkModeToggle");
           notification.remove();
         }, 5000);
       }
-
-      // Example Usage
-      setTimeout(() => {
-        showNotification("You have a new message!");
-      }, 3000);
-
       // Fetch stored bookings from localStorage
       let userBookings = JSON.parse(localStorage.getItem("userBookings")) || [];
 
