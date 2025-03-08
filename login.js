@@ -45,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Store logged-in user globally
         localStorage.setItem("loggedInUser", JSON.stringify(user));
 
-        alert("Login successful! Redirecting...");
 
         // Redirect based on user type
         window.location.href = user.userType === "business" ? "businessdashboard.html" : "userdashboard.html";
