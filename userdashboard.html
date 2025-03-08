@@ -71,6 +71,12 @@
         document.getElementById("userName").textContent =
           user.fullName || "User";
       });
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", function () {
+          sessionStorage.removeItem("loggedInUser"); // Clear session
+          window.location.href = "login.html"; // Redirect to login
+        });
     </script>
   </body>
 </html>
