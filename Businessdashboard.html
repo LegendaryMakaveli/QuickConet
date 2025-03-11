@@ -92,6 +92,29 @@
           sessionStorage.removeItem("loggedInUser"); // Clear session
           window.location.href = "login.html"; // Redirect to login
         });
+
+      let inactivityTime = 10 * 60 * 1000; // 10 minutes in milliseconds
+      let timeout;
+
+      function resetTimer() {
+        clearTimeout(timeout);
+        timeout = setTimeout(logoutUser, inactivityTime);
+      }
+
+      function logoutUser() {
+        alert("Session expired due to inactivity. Logging out...");
+        localStorage.removeItem("loggedInUser"); // Remove session data
+        window.location.href = "login.html"; // Redirect to login page
+      }
+
+      // Reset timer on user activity
+      document.addEventListener("mousemove", resetTimer);
+      document.addEventListener("keypress", resetTimer);
+      document.addEventListener("click", resetTimer);
+      document.addEventListener("scroll", resetTimer);
+
+      // Start the timer when the page loads
+      resetTimer();
     </script>
     <script src="auth.js"></script>
   </body>
