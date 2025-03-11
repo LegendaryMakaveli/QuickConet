@@ -60,3 +60,8 @@ darkModeToggle = document.getElementById("darkModeToggle");
 
       // Initial load
       updateBookings();
+
+      function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("active");
+    }
+    
