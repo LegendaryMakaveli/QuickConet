@@ -102,7 +102,6 @@
       }
 
       function logoutUser() {
-        alert("Session expired due to inactivity. Logging out...");
         localStorage.removeItem("loggedInUser"); // Remove session data
         window.location.href = "login.html"; // Redirect to login page
       }
