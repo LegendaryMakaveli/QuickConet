@@ -4,15 +4,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const profilePic = document.getElementById("profilePic");
 
     // Load user data
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    let loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
     if (!loggedInUser || loggedInUser.userType !== "customer") {
         alert("No user logged in. Redirecting to login...");
         window.location.href = "login.html";
     }
 
     // Display current user data
-    document.getElementById("fullName").value = loggedInUser.fullName;
-    document.getElementById("email").value = loggedInUser.email;
+    document.getElementById("fullName").value = loggedInUser.fullName || "";
+    document.getElementById("email").value = loggedInUser.email || "";
     document.getElementById("address").value = loggedInUser.address || "";
     document.getElementById("contact").value = loggedInUser.contact || "";
     document.getElementById("bio").value = loggedInUser.bio || "";
@@ -30,8 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
             reader.onload = function (e) {
                 profilePic.src = e.target.result;
                 loggedInUser.profilePic = e.target.result; // Save as base64
-                localStorage.setItem(loggedInUser.email, JSON.stringify(loggedInUser));
-                localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+                updateLocalStorage(loggedInUser);
             };
             reader.readAsDataURL(file);
         }
@@ -67,10 +66,16 @@ document.addEventListener("DOMContentLoaded", function () {
             loggedInUser.password = newPassword; // Update password only if changed
         }
 
-        // Save updated user data in localStorage
-        localStorage.setItem(loggedInUser.email, JSON.stringify(loggedInUser));
-        localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+        // Save updated user data
+        updateLocalStorage(loggedInUser);
 
+        alert("Profile updated successfully!");
         window.location.href = "userdashboard.html";
     });
+
+    // Function to update user data in localStorage
+    function updateLocalStorage(user) {
+        localStorage.setItem(user.email, JSON.stringify(user));
+        localStorage.setItem("loggedInUser", JSON.stringify(user));
+    }
 });

@@ -4,15 +4,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const profilePic = document.getElementById("profilePic");
 
     // Load business user data
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    let loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
     if (!loggedInUser || loggedInUser.userType !== "business") {
         alert("No business user logged in. Redirecting to login...");
         window.location.href = "login.html";
     }
 
     // Display current business data
-    document.getElementById("businessName").value = loggedInUser.fullName;
-    document.getElementById("email").value = loggedInUser.email;
+    document.getElementById("businessName").value = loggedInUser.fullName || "";
+    document.getElementById("email").value = loggedInUser.email || "";
     document.getElementById("businessAddress").value = loggedInUser.businessAddress || "";
     document.getElementById("businessContact").value = loggedInUser.businessContact || "";
     document.getElementById("businessDetails").value = loggedInUser.businessDetails || "";
@@ -31,8 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
             reader.onload = function (e) {
                 profilePic.src = e.target.result;
                 loggedInUser.profilePic = e.target.result; // Save as base64
-                localStorage.setItem(loggedInUser.email, JSON.stringify(loggedInUser));
-                localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+                updateLocalStorage(loggedInUser);
             };
             reader.readAsDataURL(file);
         }
@@ -46,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const businessAddress = document.getElementById("businessAddress").value.trim();
         const businessContact = document.getElementById("businessContact").value.trim();
         const businessDetails = document.getElementById("businessDetails").value.trim();
-        const businessCategory = document.getElementById("businessCategory").value;
+        const businessCategory = document.getElementById("businessCategory").value.trim();
         const newPassword = document.getElementById("password").value.trim();
         const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
@@ -70,11 +69,16 @@ document.addEventListener("DOMContentLoaded", function () {
             loggedInUser.password = newPassword; // Update password only if changed
         }
 
-        // Save updated user data in localStorage
-        localStorage.setItem(loggedInUser.email, JSON.stringify(loggedInUser));
-        localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+        // Save updated user data
+        updateLocalStorage(loggedInUser);
 
         alert("Business profile updated successfully!");
         window.location.href = "businessdashboard.html";
     });
+
+    // Function to update user data in localStorage
+    function updateLocalStorage(user) {
+        localStorage.setItem(user.email, JSON.stringify(user));
+        localStorage.setItem("loggedInUser", JSON.stringify(user));
+    }
 });

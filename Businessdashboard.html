@@ -93,35 +93,35 @@
         document.getElementById("userName").textContent =
           user.fullName || "User";
       });
-
       document
-        .getElementById("logout-btn")
+        .getElementById("logoutButton")
         .addEventListener("click", function () {
-          sessionStorage.removeItem("loggedInUser"); // Clear session
-          window.location.href = "login.html"; // Redirect to login
+          localStorage.removeItem("loggedInUser");
+          window.location.href = "login.html";
         });
 
-      let inactivityTime = 10 * 60 * 1000; // 10 minutes in milliseconds
-      let timeout;
+      document.addEventListener("DOMContentLoaded", function () {
+        let logoutTimer;
 
-      function resetTimer() {
-        clearTimeout(timeout);
-        timeout = setTimeout(logoutUser, inactivityTime);
-      }
+        function resetTimer() {
+          clearTimeout(logoutTimer);
+          logoutTimer = setTimeout(logoutUser, 5 * 60 * 1000); // 5 min timeout
+        }
 
-      function logoutUser() {
-        localStorage.removeItem("loggedInUser"); // Remove session data
-        window.location.href = "login.html"; // Redirect to login page
-      }
+        function logoutUser() {
+          alert("Session expired! You have been logged out.");
+          localStorage.removeItem("loggedInUser");
+          window.location.href = "login.html";
+        }
 
-      // Reset timer on user activity
-      document.addEventListener("mousemove", resetTimer);
-      document.addEventListener("keypress", resetTimer);
-      document.addEventListener("click", resetTimer);
-      document.addEventListener("scroll", resetTimer);
+        // Reset timer on user activity
+        document.addEventListener("mousemove", resetTimer);
+        document.addEventListener("keypress", resetTimer);
+        document.addEventListener("click", resetTimer);
+        document.addEventListener("scroll", resetTimer);
 
-      // Start the timer when the page loads
-      resetTimer();
+        resetTimer(); // Start timer when page loads
+      });
 
       document.addEventListener("DOMContentLoaded", function () {
         const dashboardProfilePic = document.getElementById(

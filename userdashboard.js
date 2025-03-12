@@ -65,3 +65,26 @@ darkModeToggle = document.getElementById("darkModeToggle");
         document.getElementById("sidebar").classList.toggle("active");
     }
     
+
+    document.addEventListener("DOMContentLoaded", function () {
+      let logoutTimer;
+
+      function resetTimer() {
+        clearTimeout(logoutTimer);
+        logoutTimer = setTimeout(logoutUser, 5 * 60 * 1000); // 5 min timeout
+      }
+
+      function logoutUser() {
+        alert("Session expired! You have been logged out.");
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "login.html";
+      }
+
+      // Reset timer on user activity
+      document.addEventListener("mousemove", resetTimer);
+      document.addEventListener("keypress", resetTimer);
+      document.addEventListener("click", resetTimer);
+      document.addEventListener("scroll", resetTimer);
+
+      resetTimer(); // Start timer when page loads
+    });

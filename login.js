@@ -24,27 +24,27 @@ document.addEventListener("DOMContentLoaded", function () {
         const email = loginForm.querySelector("input[placeholder='Email']").value.trim();
         const password = loginForm.querySelector("input[placeholder='Password']").value.trim();
 
-        console.log("Logging in as:", selectedRole, { email, password });
-
         if (!email || !password) {
             alert("Please fill in all fields.");
             return;
         }
 
         // Retrieve all users
-        const users = JSON.parse(localStorage.getItem("users")) || [];
+        let users = JSON.parse(localStorage.getItem("users")) || [];
 
-        // Find matching user
-        const user = users.find(user => user.email === email && user.userType === selectedRole);
+        // Find user with matching email and role
+        let userIndex = users.findIndex(user => user.email === email && user.userType === selectedRole);
+        let user = users[userIndex];
 
-        if (!user || user.password !== password) {
+        if (userIndex === -1 || user.password !== password) {
             alert("Invalid email, password, or user type.");
             return;
         }
 
-        // Store logged-in user globally
+        // Update localStorage to reflect any new profile changes
         localStorage.setItem("loggedInUser", JSON.stringify(user));
 
+        alert("Login successful!");
 
         // Redirect based on user type
         window.location.href = user.userType === "business" ? "businessdashboard.html" : "userdashboard.html";

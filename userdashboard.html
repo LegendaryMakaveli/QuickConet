@@ -80,33 +80,11 @@
           user.fullName || "User";
       });
       document
-        .getElementById("logout-btn")
+        .getElementById("logoutButton")
         .addEventListener("click", function () {
-          sessionStorage.removeItem("loggedInUser"); // Clear session
-          window.location.href = "login.html"; // Redirect to login
+          localStorage.removeItem("loggedInUser");
+          window.location.href = "login.html";
         });
-
-      let inactivityTime = 10 * 60 * 1000; // 10 minutes in milliseconds
-      let timeout;
-
-      function resetTimer() {
-        clearTimeout(timeout);
-        timeout = setTimeout(logoutUser, inactivityTime);
-      }
-
-      function logoutUser() {
-        localStorage.removeItem("loggedInUser"); // Remove session data
-        window.location.href = "login.html"; // Redirect to login page
-      }
-
-      // Reset timer on user activity
-      document.addEventListener("mousemove", resetTimer);
-      document.addEventListener("keypress", resetTimer);
-      document.addEventListener("click", resetTimer);
-      document.addEventListener("scroll", resetTimer);
-
-      // Start the timer when the page loads
-      resetTimer();
 
       document.addEventListener("DOMContentLoaded", function () {
         const dashboardProfilePic = document.getElementById(
