@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Update localStorage to reflect any new profile changes
         localStorage.setItem("loggedInUser", JSON.stringify(user));
 
-        alert("Login successful!");
 
         // Redirect based on user type
         window.location.href = user.userType === "business" ? "businessdashboard.html" : "userdashboard.html";
