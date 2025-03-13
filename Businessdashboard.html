@@ -105,11 +105,11 @@
 
         function resetTimer() {
           clearTimeout(logoutTimer);
-          logoutTimer = setTimeout(logoutUser, 5 * 60 * 1000); // 5 min timeout
+          logoutTimer = setTimeout(logoutUser, 10 * 60 * 1000); // 10 min timeout
         }
 
         function logoutUser() {
-          alert("Session expired! You have been logged out.");
+          // alert("Session expired! You have been logged out.");
           localStorage.removeItem("loggedInUser");
           window.location.href = "login.html";
         }
