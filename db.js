@@ -5,24 +5,34 @@ document.addEventListener("DOMContentLoaded", function () {
     const priceFilter = document.getElementById("priceFilter");
 
     let db;
+    const dbVersion = 2; // Increment this version to trigger an upgrade
 
     // Open IndexedDB
-    const dbRequest = indexedDB.open("BusinessDB", 1);
+    const dbRequest = indexedDB.open("BusinessDB", dbVersion);
 
     dbRequest.onupgradeneeded = function (event) {
         console.log("⏳ Upgrading IndexedDB...");
         db = event.target.result;
+
         if (!db.objectStoreNames.contains("businesses")) {
             let store = db.createObjectStore("businesses", { keyPath: "id", autoIncrement: true });
             store.createIndex("category", "category", { unique: false });
             store.createIndex("price", "price", { unique: false });
             console.log("✅ Object store 'businesses' created.");
+        } else {
+            console.log("ℹ️ Object store 'businesses' already exists.");
         }
     };
 
-    dbRequest.onsuccess = function () {
+    dbRequest.onsuccess = function (event) {
         console.log("✅ IndexedDB opened successfully.");
-        db = dbRequest.result;
+        db = event.target.result;
+
+        if (!db.objectStoreNames.contains("businesses")) {
+            console.error("❌ Object store 'businesses' not found. Database may need an upgrade.");
+            return;
+        }
+
         loadBusinesses();
 
         // Attach event listeners
@@ -37,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function loadBusinesses() {
         if (!db.objectStoreNames.contains("businesses")) {
-            console.error("❌ Object store 'businesses' not found.");
+            console.error("❌ Object store 'businesses' not found. Try refreshing after database upgrade.");
             return;
         }
 
@@ -138,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function viewBusinessDetails(businessId) {
-    const dbRequest = indexedDB.open("BusinessDB", 1);
+    const dbRequest = indexedDB.open("BusinessDB", 2);
 
     dbRequest.onsuccess = function () {
         let db = dbRequest.result;
@@ -165,3 +175,27 @@ function viewBusinessDetails(businessId) {
         };
     };
 }
+
+const dbVersion = 1;
+const dbRequest = indexedDB.open("BusinessDB", dbVersion);
+
+dbRequest.onupgradeneeded = function (event) {
+    let db = event.target.result;
+
+    if (!db.objectStoreNames.contains("businesses")) {
+        let store = db.createObjectStore("businesses", { keyPath: "id", autoIncrement: true });
+        store.createIndex("name", "name", { unique: false });
+        store.createIndex("category", "category", { unique: false });
+        store.createIndex("price", "price", { unique: false });
+
+        console.log("✅ Object store 'businesses' created.");
+    }
+};
+
+dbRequest.onsuccess = function () {
+    console.log("✅ IndexedDB opened successfully.");
+};
+
+dbRequest.onerror = function (event) {
+    console.error("❌ Error opening IndexedDB:", event.target.error);
+};
