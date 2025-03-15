@@ -118,3 +118,13 @@ if (isUser) {
         if (e.key === "Enter") sendBtn.click();
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const chatWith = localStorage.getItem("chatWith");
+    if (!chatWith) {
+        alert("No business selected for chat.");
+        window.history.back();
+    } else {
+        document.getElementById("chatHeader").innerText = `Chat with ${chatWith}`;
+    }
+});

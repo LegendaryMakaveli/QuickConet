@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage My Business</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>My Business Listings</h1>
+
+      <div class="business-form-container">
+        <h2>Post Your Business</h2>
+        <form id="businessForm">
+          <label>Business Name:</label>
+          <input
+            type="text"
+            id="businessName"
+            placeholder="Enter business name"
+            required
+          />
+
+          <label>Category:</label>
+          <input
+            type="text"
+            id="businessCategory"
+            placeholder="e.g., Fashion, Tech, Food"
+            required
+          />
+
+          <label>Office Address:</label>
+          <input
+            type="text"
+            id="businessAddress"
+            placeholder="Enter address"
+            required
+          />
+
+          <label>Details:</label>
+          <textarea
+            id="businessDetails"
+            placeholder="Describe your business"
+            required
+          ></textarea>
+
+          <label>Price (If applicable):</label>
+          <input
+            type="text"
+            id="businessPrice"
+            placeholder="Enter price or leave blank"
+          />
+
+          <label>WhatsApp Link:</label>
+          <input
+            type="url"
+            id="businessWhatsApp"
+            placeholder="https://wa.me/234XXXXXXXXXX"
+            required
+          />
+
+          <label>Website (Optional):</label>
+          <input
+            type="url"
+            id="businessWebsite"
+            placeholder="Enter website URL"
+          />
+
+          <label>Upload Images:</label>
+          <input type="file" id="businessImages" multiple accept="image/*" />
+
+          <button type="submit">Post Business</button>
+        </form>
+      </div>
+      <div class="more-images">
+        <h2>Display More Images For Your Listing</h2>
+        <label for="images">Upload Images:</label>
+        <input type="file" id="images" multiple accept="image/*" />
+      </div>
+      <a href="Businessdashboard.html" class="btn">Dashboard</a>
+    </header>
+
+    <div id="myBusinessList"></div>
+    <script src="my-business.js"></script>
+  </body>
+</html>
