@@ -1,83 +1,100 @@
 document.addEventListener("DOMContentLoaded", function () {
     const businessForm = document.getElementById("businessForm");
+    const myBusinessList = document.getElementById("myBusinessList");
 
-    // Initialize IndexedDB
-    const dbRequest = indexedDB.open("BusinessDB", 1);
+    // Load existing businesses from localStorage on page load
+    loadMyBusinesses();
 
-    dbRequest.onupgradeneeded = function (event) {
-        let db = event.target.result;
-        if (!db.objectStoreNames.contains("businesses")) {
-            let store = db.createObjectStore("businesses", { keyPath: "id", autoIncrement: true });
-            store.createIndex("category", "category", { unique: false });
+    businessForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const businessName = document.getElementById("businessName").value.trim();
+        const businessCategory = document.getElementById("businessCategory").value.trim();
+        const businessAddress = document.getElementById("businessAddress").value.trim();
+        const businessDetails = document.getElementById("businessDetails").value.trim();
+        const businessPrice = document.getElementById("businessPrice").value.trim();
+        const businessWhatsApp = document.getElementById("businessWhatsApp").value.trim();
+        const businessWebsite = document.getElementById("businessWebsite").value.trim();
+        const images = document.getElementById("businessImages").files;
+
+        let imageArray = [];
+        let imagesProcessed = 0;
+
+        if (images.length > 0) {
+            for (let i = 0; i < images.length; i++) {
+                const reader = new FileReader();
+                reader.readAsDataURL(images[i]);
+
+                reader.onload = function (e) {
+                    imageArray.push(e.target.result);
+                    imagesProcessed++;
+
+                    if (imagesProcessed === images.length) {
+                        saveBusinessListing(imageArray);
+                    }
+                };
+            }
+        } else {
+            saveBusinessListing(imageArray);
         }
-    };
 
-    dbRequest.onerror = function () {
-        console.error("❌ Error opening IndexedDB");
-    };
+        function saveBusinessListing(imageArray) {
+            let newBusiness = {
+                id: Date.now(), // Unique ID using timestamp
+                name: businessName,
+                category: businessCategory,
+                address: businessAddress,
+                details: businessDetails,
+                price: businessPrice,
+                whatsapp: businessWhatsApp,
+                website: businessWebsite,
+                images: imageArray
+            };
 
-    dbRequest.onsuccess = function () {
-        let db = dbRequest.result;
-        console.log("✅ IndexedDB initialized successfully");
+            let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
+            businesses.push(newBusiness);
+            localStorage.setItem("businesses", JSON.stringify(businesses));
 
-        businessForm.addEventListener("submit", function (e) {
-            e.preventDefault();
+            alert("✅ Business posted successfully!");
+            businessForm.reset();
+            loadMyBusinesses(); // Refresh list
+        }
+    });
 
-            const businessName = document.getElementById("businessName").value.trim();
-            const businessCategory = document.getElementById("businessCategory").value.trim();
-            const businessAddress = document.getElementById("businessAddress").value.trim();
-            const businessDetails = document.getElementById("businessDetails").value.trim();
-            const businessPrice = document.getElementById("businessPrice").value.trim();
-            const businessWhatsApp = document.getElementById("businessWhatsApp").value.trim();
-            const businessWebsite = document.getElementById("businessWebsite").value.trim();
-            const images = document.getElementById("businessImages").files;
+    function loadMyBusinesses() {
+        myBusinessList.innerHTML = "";
+        let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
 
-            let imageArray = [];
-            let imagesProcessed = 0;
+        if (businesses.length === 0) {
+            myBusinessList.innerHTML = "<p>No business listings found.</p>";
+            return;
+        }
 
-            if (images.length > 0) {
-                for (let i = 0; i < images.length; i++) {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(images[i]);
+        businesses.forEach((business) => {
+            let businessCard = document.createElement("div");
+            businessCard.classList.add("business-card");
 
-                    reader.onload = function (e) {
-                        imageArray.push(e.target.result);
-                        imagesProcessed++;
+            let firstImage = business.images.length > 0 ? business.images[0] : "placeholder.jpg";
 
-                        if (imagesProcessed === images.length) {
-                            saveBusinessListing(imageArray);
-                        }
-                    };
-                }
-            } else {
-                saveBusinessListing(imageArray);
-            }
+            businessCard.innerHTML = `
+                <img src="${firstImage}" alt="Business Image" class="business-image">
+                <h3>${business.name}</h3>
+                <p><strong>Category:</strong> ${business.category}</p>
+                <p><strong>Price:</strong> ₦${business.price}</p>
+                <p><strong>Address:</strong> ${business.address}</p>
+                <button onclick="deleteBusiness(${business.id})">❌ Delete</button>
+            `;
 
-            function saveBusinessListing(imageArray) {
-                let newBusiness = {
-                    name: businessName,
-                    category: businessCategory,
-                    address: businessAddress,
-                    details: businessDetails,
-                    price: businessPrice,
-                    whatsapp: businessWhatsApp,
-                    website: businessWebsite,
-                    images: imageArray
-                };
-
-                let transaction = db.transaction(["businesses"], "readwrite");
-                let store = transaction.objectStore("businesses");
-                let request = store.add(newBusiness);
-
-                request.onsuccess = function () {
-                    alert("✅ Business posted successfully!");
-                    businessForm.reset();
-                };
-
-                request.onerror = function () {
-                    console.error("❌ Error saving business");
-                };
-            }
+            myBusinessList.appendChild(businessCard);
         });
-    };
+    }
 });
+
+// Function to delete a business from localStorage
+function deleteBusiness(businessId) {
+    let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
+    businesses = businesses.filter((business) => business.id !== businessId);
+    localStorage.setItem("businesses", JSON.stringify(businesses));
+    alert("❌ Business deleted successfully!");
+    location.reload();
+}

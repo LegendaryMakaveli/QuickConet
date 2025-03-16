@@ -1,178 +1,244 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const businessId = parseInt(localStorage.getItem("selectedBusinessId"));
-    if (isNaN(businessId)) {
-        alert("Business details not found.");
-        window.location.href = "business-showcase.html"; // Redirect back
+    if (document.getElementById("myBusinessList")) {
+        displayBusinessListings();
+    }
+
+    if (document.getElementById("businessName")) {
+        loadBusinessDetails();
+        displayReviews();
+    }
+});
+
+// ✅ Function to display business listings
+function displayBusinessListings() {
+    let businessList = document.getElementById("myBusinessList");
+
+    if (!businessList) {
+        console.error("Error: 'myBusinessList' element not found!");
         return;
     }
 
-    const dbRequest = indexedDB.open("BusinessDB", 1);
-    dbRequest.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction("businesses", "readonly");
-        const store = transaction.objectStore("businesses");
-        const getRequest = store.get(businessId);
+    businessList.innerHTML = ""; // Clear previous listings
 
-        getRequest.onsuccess = function () {
-            const business = getRequest.result;
-            if (!business) {
-                alert("Business details not found.");
-                window.location.href = "business-showcase.html";
-                return;
-            }
+    let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
 
-            displayBusinessDetails(business);
-        };
-    };
-});
+    businesses.forEach((business) => {
+        let businessItem = document.createElement("div");
+        businessItem.classList.add("business-item");
 
-// Function to display business details
-function displayBusinessDetails(business) {
-    document.getElementById("businessName").textContent = business.name;
-    document.getElementById("businessCategory").textContent = business.category;
-    document.getElementById("businessAddress").textContent = business.address;
-    document.getElementById("businessDetails").textContent = business.details;
-    document.getElementById("businessPrice").textContent = business.price || "Not Available";
+        businessItem.innerHTML = `
+            <h3>${business.name}</h3>
+            <p><strong>Category:</strong> ${business.category}</p>
+            <p><strong>Address:</strong> ${business.address}</p>
+            <button onclick="openBusinessDetails(${business.id})">View Details</button>
+        `;
 
-    // WhatsApp and Website Links
-    const whatsappLink = document.getElementById("businessWhatsApp");
-    whatsappLink.href = business.whatsapp ? `https://wa.me/${business.whatsapp.replace(/\D/g, "")}` : "#";
-    document.getElementById("businessWebsite").href = business.website || "#";
-    
-    if (!business.website) {
-        document.getElementById("businessWebsite").style.display = "none";
-    }
-
-    // Display images with slider
-    setupImageSlider(business.images);
-
-    // Load reviews from IndexedDB
-    loadReviews(business.id);
-
-    // Check if this business is already in favorites
-    checkFavoriteStatus(business.id);
+        businessList.appendChild(businessItem);
+    });
 }
 
-// Function to handle image slider
-function setupImageSlider(images) {
-    const imagesContainer = document.getElementById("businessImagesContainer");
-    imagesContainer.innerHTML = "";
+// ✅ Function to open business details page
+function openBusinessDetails(businessId) {
+    let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
+    let selectedBusiness = businesses.find(b => b.id === businessId);
 
-    if (images.length > 0) {
-        let index = 0;
-        const img = document.createElement("img");
-        img.src = images[index];
-        img.classList.add("business-image");
-        imagesContainer.appendChild(img);
-
-        const prevBtn = document.createElement("button");
-        prevBtn.textContent = "◀";
-        prevBtn.onclick = () => {
-            index = (index - 1 + images.length) % images.length;
-            img.src = images[index];
-        };
-
-        const nextBtn = document.createElement("button");
-        nextBtn.textContent = "▶";
-        nextBtn.onclick = () => {
-            index = (index + 1) % images.length;
-            img.src = images[index];
-        };
-
-        imagesContainer.prepend(prevBtn);
-        imagesContainer.appendChild(nextBtn);
+    if (selectedBusiness) {
+        localStorage.setItem("selectedBusiness", JSON.stringify(selectedBusiness));
+        window.location.href = "business-details.html"; // Redirect to details page
     } else {
-        imagesContainer.innerHTML = "<p>No images available.</p>";
+        console.error("❌ Business not found");
     }
 }
 
-// Function to load reviews from IndexedDB
-function loadReviews(businessId) {
-    const dbRequest = indexedDB.open("BusinessDB", 1);
-    dbRequest.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction("reviews", "readonly");
-        const store = transaction.objectStore("reviews");
-        const request = store.get(businessId);
+// ✅ Function to load and display selected business details
+function loadBusinessDetails() {
+    const businessData = JSON.parse(localStorage.getItem("selectedBusiness"));
 
-        request.onsuccess = function () {
-            const reviews = request.result ? request.result.reviews : [];
-            displayReviews(reviews);
-        };
-    };
-}
-
-// Function to display reviews
-function displayReviews(reviews) {
-    const reviewsList = document.getElementById("reviewsList");
-    reviewsList.innerHTML = reviews.length > 0 
-        ? reviews.map(review => `<div class="review"><p><strong>Rating:</strong> ${"⭐".repeat(review.rating)}</p><p>${review.text}</p></div>`).join("")
-        : "<p>No reviews yet.</p>";
-}
-
-// Submit review form
-document.getElementById("reviewForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const rating = parseInt(document.getElementById("rating").value);
-    const reviewText = document.getElementById("reviewText").value.trim();
-    if (!reviewText) {
-        alert("Please enter a review.");
+    if (!businessData) {
+        console.error("Error: No business selected.");
         return;
     }
 
-    const businessId = parseInt(localStorage.getItem("selectedBusinessId"));
-    const dbRequest = indexedDB.open("BusinessDB", 1);
-    
-    dbRequest.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction("reviews", "readwrite");
-        const store = transaction.objectStore("reviews");
+    document.getElementById("businessName").textContent = businessData.name;
+    document.getElementById("businessCategory").textContent = businessData.category;
+    document.getElementById("businessAddress").textContent = businessData.address;
+    document.getElementById("businessDetails").textContent = businessData.details;
+    document.getElementById("businessPrice").textContent = businessData.price || "Not specified";
 
-        store.get(businessId).onsuccess = function (event) {
-            const existingReviews = event.target.result || { id: businessId, reviews: [] };
-            existingReviews.reviews.push({ rating, text: reviewText });
+    // ✅ Set up WhatsApp and Website links
+    const whatsappBtn = document.getElementById("businessWhatsApp");
+    if (businessData.whatsapp) {
+        whatsappBtn.href = businessData.whatsapp;
+        whatsappBtn.style.display = "inline-block";
+    } else {
+        whatsappBtn.style.display = "none";
+    }
 
-            store.put(existingReviews);
-            loadReviews(businessId);
-            document.getElementById("reviewForm").reset();
-        };
-    };
+    const websiteBtn = document.getElementById("businessWebsite");
+    if (businessData.website) {
+        websiteBtn.href = businessData.website;
+        websiteBtn.style.display = "inline-block";
+    } else {
+        websiteBtn.style.display = "none";
+    }
+
+    // ✅ Display business images
+    const imagesContainer = document.getElementById("businessImages");
+    imagesContainer.innerHTML = ""; // Clear previous images
+    if (businessData.images.length > 0) {
+        businessData.images.forEach(imgSrc => {
+            let imgElement = document.createElement("img");
+            imgElement.src = imgSrc;
+            imgElement.classList.add("business-image");
+            imagesContainer.appendChild(imgElement);
+        });
+    } else {
+        imagesContainer.innerHTML = "<p>No images available</p>";
+    }
+}
+
+// ✅ Function to display reviews
+function displayReviews() {
+    const businessData = JSON.parse(localStorage.getItem("selectedBusiness"));
+    if (!businessData) {
+        console.error("Error: No business selected.");
+        return;
+    }
+
+    const reviewsKey = `reviews_${businessData.id}`;
+    let reviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
+
+    const reviewsList = document.getElementById("reviewsList");
+    reviewsList.innerHTML = ""; // Clear previous reviews
+
+    if (reviews.length === 0) {
+        reviewsList.innerHTML = "<p>No reviews yet. Be the first to leave one!</p>";
+        return;
+    }
+
+    reviews.forEach((review, index) => {
+        let reviewItem = document.createElement("div");
+        reviewItem.classList.add("review-item");
+
+        let stars = "⭐".repeat(review.rating) + "☆".repeat(5 - review.rating);
+        const reviewDate = new Date(review.timestamp).toLocaleString();
+
+        reviewItem.innerHTML = `
+            <strong>${review.name}</strong> <span class="review-date">${reviewDate}</span>
+            <p id="reviewText-${index}">${review.text}</p>
+            <p class="review-stars">${stars}</p>
+            <button class="edit-btn" onclick="editReview(${index})">✏️ Edit</button>
+            <button class="delete-btn" onclick="deleteReview(${index})">❌ Delete</button>
+        `;
+
+        reviewsList.appendChild(reviewItem);
+    });
+
+    updateAverageRating(); // Update rating for this business
+}
+
+// ✅ Function to submit a review
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (document.getElementById("businessName")) {
+        loadBusinessDetails();
+        displayReviews();
+    }
+
+    let reviewForm = document.getElementById("reviewForm");
+    if (reviewForm) {
+        reviewForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            submitReview();
+        });
+    } else {
+        console.error("Error: 'reviewForm' not found!");
+    }
 });
 
-// Favorite business
-document.getElementById("favoriteBtn").addEventListener("click", function () {
-    const businessId = parseInt(localStorage.getItem("selectedBusinessId"));
-    const dbRequest = indexedDB.open("BusinessDB", 1);
+function submitReview() {
+    let reviewInput = document.getElementById("reviewText");
+
+    // ✅ Check if the element exists
+    if (!reviewInput) {
+        console.error("Error: 'reviewText' input field not found!");
+        return;
+    }
+
+    let businessId = localStorage.getItem("currentBusinessId");
+    if (!businessId) {
+        console.error("Error: No business ID found in localStorage.");
+        return;
+    }
+
+    let reviewText = reviewInput.value.trim();
+    if (reviewText === "") {
+        alert("Please enter a review before submitting.");
+        return;
+    }
+
+    // ✅ Fetch existing reviews from localStorage
+    let reviews = JSON.parse(localStorage.getItem("reviews")) || {};
+
+    // ✅ Ensure reviews array exists for the business
+    if (!reviews[businessId]) {
+        reviews[businessId] = [];
+    }
+
+    // ✅ Add the new review
+    reviews[businessId].push(reviewText);
     
-    dbRequest.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction("favorites", "readwrite");
-        const store = transaction.objectStore("favorites");
+    // ✅ Save updated reviews to localStorage
+    localStorage.setItem("reviews", JSON.stringify(reviews));
 
-        store.get(businessId).onsuccess = function (event) {
-            if (event.target.result) {
-                store.delete(businessId);
-                document.getElementById("favoriteBtn").textContent = "Add to Favorites";
-            } else {
-                store.put({ id: businessId });
-                document.getElementById("favoriteBtn").textContent = "Remove from Favorites";
-            }
-        };
-    };
-});
+    // ✅ Clear input field
+    reviewInput.value = "";
 
-// Check if business is favorited
-function checkFavoriteStatus(businessId) {
-    const dbRequest = indexedDB.open("BusinessDB", 1);
-    
-    dbRequest.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction("favorites", "readonly");
-        const store = transaction.objectStore("favorites");
+    // ✅ Update UI
+    displayReviews();
+}
 
-        store.get(businessId).onsuccess = function (event) {
-            document.getElementById("favoriteBtn").textContent = event.target.result ? "Remove from Favorites" : "Add to Favorites";
-        };
-    };
+// ✅ Function to edit a review
+function editReview(index) {
+    const businessData = JSON.parse(localStorage.getItem("selectedBusiness"));
+    const reviewsKey = `reviews_${businessData.id}`;
+    let reviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
+
+    const newText = prompt("Edit your review:", reviews[index].text);
+    if (newText !== null && newText.trim() !== "") {
+        reviews[index].text = newText;
+        localStorage.setItem(reviewsKey, JSON.stringify(reviews));
+        displayReviews(); // Refresh review list
+    }
+}
+
+// ✅ Function to delete a review
+function deleteReview(index) {
+    const businessData = JSON.parse(localStorage.getItem("selectedBusiness"));
+    const reviewsKey = `reviews_${businessData.id}`;
+    let reviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
+
+    if (confirm("Are you sure you want to delete this review?")) {
+        reviews.splice(index, 1); // Remove from array
+        localStorage.setItem(reviewsKey, JSON.stringify(reviews));
+        displayReviews(); // Refresh review list
+    }
+}
+
+// ✅ Function to calculate and display average rating
+function updateAverageRating() {
+    const businessData = JSON.parse(localStorage.getItem("selectedBusiness"));
+    const reviewsKey = `reviews_${businessData.id}`;
+    let reviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
+
+    if (reviews.length === 0) {
+        document.getElementById("averageRating").innerHTML = "No ratings yet.";
+        return;
+    }
+
+    let totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    let average = (totalRating / reviews.length).toFixed(1);
+    let stars = "⭐".repeat(Math.round(average)) + "☆".repeat(5 - Math.round(average));
+
+    document.getElementById("averageRating").innerHTML = `Average Rating: ${average} ${stars}`;
 }

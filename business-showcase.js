@@ -4,54 +4,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const categoryFilter = document.getElementById("categoryFilter");
     const priceFilter = document.getElementById("priceFilter");
 
-    let db;
+    loadBusinesses();
 
-    // Open IndexedDB
-    const dbRequest = indexedDB.open("BusinessDB", 1);
-
-    dbRequest.onupgradeneeded = function (event) {
-        console.log("⏳ Upgrading IndexedDB...");
-        db = event.target.result;
-        if (!db.objectStoreNames.contains("businesses")) {
-            let store = db.createObjectStore("businesses", { keyPath: "id", autoIncrement: true });
-            store.createIndex("category", "category", { unique: false });
-            store.createIndex("price", "price", { unique: false });
-            console.log("✅ Object store 'businesses' created.");
-        }
-    };
-
-    dbRequest.onsuccess = function () {
-        console.log("✅ IndexedDB opened successfully.");
-        db = dbRequest.result;
-        loadBusinesses();
-
-        // Attach event listeners
-        searchInput.addEventListener("input", filterBusinesses);
-        categoryFilter.addEventListener("change", filterBusinesses);
-        priceFilter.addEventListener("change", filterBusinesses);
-    };
-
-    dbRequest.onerror = function () {
-        console.error("❌ Error opening IndexedDB");
-    };
+    // Attach event listeners
+    searchInput.addEventListener("input", filterBusinesses);
+    categoryFilter.addEventListener("change", filterBusinesses);
+    priceFilter.addEventListener("change", filterBusinesses);
 
     function loadBusinesses() {
-        if (!db.objectStoreNames.contains("businesses")) {
-            console.error("❌ Object store 'businesses' not found.");
-            return;
-        }
-
-        let transaction = db.transaction(["businesses"], "readonly");
-        let store = transaction.objectStore("businesses");
-        let request = store.getAll();
-
-        request.onsuccess = function () {
-            displayBusinesses(request.result);
-        };
-
-        request.onerror = function () {
-            console.error("❌ Error fetching businesses from IndexedDB");
-        };
+        let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
+        displayBusinesses(businesses);
     }
 
     function displayBusinesses(businesses) {
@@ -61,12 +23,12 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        businesses.forEach((business) => {
+        businesses.forEach((business, index) => {
             let businessCard = document.createElement("div");
             businessCard.classList.add("business-card");
 
             let firstImage = business.images && business.images.length > 0 ? business.images[0] : "placeholder.jpg";
-            let isFavorite = checkIfFavorite(business.id) ? "❤️" : "🤍";
+            let isFavorite = checkIfFavorite(index) ? "❤️" : "🤍";
 
             businessCard.innerHTML = `
                 <img src="${firstImage}" alt="Business Image" class="business-image">
@@ -74,8 +36,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 <p><strong>Category:</strong> ${business.category}</p>
                 <p><strong>Price:</strong> ₦${business.price}</p>
                 <p><strong>Address:</strong> ${business.address}</p>
-                <button onclick="viewBusinessDetails(${business.id})">View More</button>
-                <button class="fav-btn" data-id="${business.id}">${isFavorite}</button>
+                <button onclick="viewBusinessDetails(${index})">View More</button>
+                <button class="fav-btn" data-id="${index}">${isFavorite}</button>
             `;
 
             businessList.appendChild(businessCard);
@@ -90,78 +52,46 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function filterBusinesses() {
-        if (!db) {
-            console.error("❌ Database not initialized yet.");
-            return;
-        }
+        let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
+        let searchTerm = searchInput.value.toLowerCase();
+        let selectedCategory = categoryFilter.value;
+        let selectedPrice = priceFilter.value;
 
-        let transaction = db.transaction(["businesses"], "readonly");
-        let store = transaction.objectStore("businesses");
-        let request = store.getAll();
+        let filteredBusinesses = businesses.filter((business) => {
+            let matchesSearch = business.name.toLowerCase().includes(searchTerm) || business.category.toLowerCase().includes(searchTerm);
+            let matchesCategory = selectedCategory === "all" || business.category === selectedCategory;
+            let matchesPrice = selectedPrice === "all" || parseInt(business.price) <= parseInt(selectedPrice);
+            return matchesSearch && matchesCategory && matchesPrice;
+        });
 
-        request.onsuccess = function () {
-            let businesses = request.result;
-            let searchTerm = searchInput.value.toLowerCase();
-            let selectedCategory = categoryFilter.value;
-            let selectedPrice = priceFilter.value;
-
-            let filteredBusinesses = businesses.filter((business) => {
-                let matchesSearch = business.name.toLowerCase().includes(searchTerm) || business.category.toLowerCase().includes(searchTerm);
-                let matchesCategory = selectedCategory === "all" || business.category === selectedCategory;
-                let matchesPrice = selectedPrice === "all" || parseInt(business.price) <= parseInt(selectedPrice);
-                return matchesSearch && matchesCategory && matchesPrice;
-            });
-
-            displayBusinesses(filteredBusinesses);
-        };
-
-        request.onerror = function () {
-            console.error("❌ Error filtering businesses");
-        };
+        displayBusinesses(filteredBusinesses);
     }
 
-    function checkIfFavorite(businessId) {
+    function checkIfFavorite(businessIndex) {
         let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-        return favorites.includes(businessId);
+        return favorites.includes(businessIndex);
     }
 
-    function toggleFavorite(businessId) {
+    function toggleFavorite(businessIndex) {
         let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-        if (favorites.includes(businessId)) {
-            favorites = favorites.filter((id) => id !== businessId);
+        if (favorites.includes(businessIndex)) {
+            favorites = favorites.filter((id) => id !== businessIndex);
         } else {
-            favorites.push(businessId);
+            favorites.push(businessIndex);
         }
         localStorage.setItem("favorites", JSON.stringify(favorites));
         loadBusinesses(); // Refresh the list
     }
 });
 
-function viewBusinessDetails(businessId) {
-    const dbRequest = indexedDB.open("BusinessDB", 1);
+function viewBusinessDetails(businessIndex) {
+    let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
+    let selectedBusiness = businesses[businessIndex];
 
-    dbRequest.onsuccess = function () {
-        let db = dbRequest.result;
-        if (!db.objectStoreNames.contains("businesses")) {
-            console.error("❌ Object store 'businesses' does not exist.");
-            return;
-        }
-
-        let transaction = db.transaction(["businesses"], "readonly");
-        let store = transaction.objectStore("businesses");
-        let request = store.get(businessId);
-
-        request.onsuccess = function () {
-            if (request.result) {
-                localStorage.setItem("selectedBusiness", JSON.stringify(request.result));
-                window.location.href = "business-details.html";
-            } else {
-                console.error("❌ Business not found!");
-            }
-        };
-
-        request.onerror = function () {
-            console.error("❌ Error retrieving business details");
-        };
-    };
+    if (selectedBusiness) {
+        localStorage.setItem("selectedBusiness", JSON.stringify(selectedBusiness));
+        window.location.href = "business-details.html";
+    } else {
+        console.error("❌ Business not found!");
+    }
 }

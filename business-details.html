@@ -5,56 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Business Details</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="business-details.css" />
+    <style>
+      .reviews-container h3 {
+        color: blue;
+      }
+      .reviews-container h4 {
+        color: blue;
+      }
+    </style>
   </head>
-  <body>
+  <body onload="displayReviews(); updateAverageRating();">
     <header>
       <h1>Business Details</h1>
+      <a href="business-showcase.html" class="btn">Back to Listings</a>
     </header>
 
     <div class="business-details-container">
+      <div id="businessImages"></div>
       <h2 id="businessName"></h2>
       <p><strong>Category:</strong> <span id="businessCategory"></span></p>
       <p><strong>Address:</strong> <span id="businessAddress"></span></p>
       <p><strong>Details:</strong> <span id="businessDetails"></span></p>
-      <p><strong>Price:</strong> <span id="businessPrice"></span></p>
-
-      <!-- Business Images Section -->
-      <div id="businessImagesContainer" class="image-gallery"></div>
-
-      <div class="contact-links">
-        <a id="businessWhatsApp" target="_blank">Chat on WhatsApp</a>
-        <a id="businessWebsite" target="_blank">Visit Website</a>
-      </div>
+      <p><strong>Price:</strong> ₦<span id="businessPrice"></span></p>
+      <a id="businessWhatsApp" class="btn">Contact on WhatsApp</a>
+      <a id="businessWebsite" class="btn" target="_blank">Visit Website</a>
     </div>
-    <div id="businessDetails"></div>
+    <div class="business-images" id="businessImagesContainer"></div>
 
-    <!-- Review Section -->
-    <h3>Customer Reviews</h3>
-    <div id="reviewsList"></div>
+    <hr />
 
-    <h3>Leave a Review</h3>
-    <form id="reviewForm">
-      <label for="rating">Rating:</label>
-      <select id="rating">
-        <option value="5">⭐⭐⭐⭐⭐ - Excellent</option>
-        <option value="4">⭐⭐⭐⭐ - Good</option>
-        <option value="3">⭐⭐⭐ - Average</option>
-        <option value="2">⭐⭐ - Poor</option>
-        <option value="1">⭐ - Terrible</option>
-      </select>
-
-      <label for="reviewText">Your Review:</label>
-      <textarea
-        id="reviewText"
-        placeholder="Write a review..."
-        required
-      ></textarea>
-
-      <button type="submit">Submit Review</button>
-    </form>
-
-    <a href="business-showcase.html" class="btn">Go Back</a>
-    <script src="db.js"></script>
+    <div class="reviews-container">
+      <h3>Customer Reviews</h3>
+      <p id="averageRating">No ratings yet.</p> <!-- Average rating display -->
+      <div id="reviewsList"></div>
+    
+      <h4>Leave a Review</h4>
+      <form id="reviewForm" class="review-form">
+        <input type="text" id="reviewerName" placeholder="Your Name" required />
+        <textarea id="reviewText" placeholder="Write a review..." required></textarea>
+        <button type="submit">Submit Review</button>
+      </form>
+    </div>
+    
+      </form>
+    </div>
     <script src="business-details.js"></script>
   </body>
 </html>
