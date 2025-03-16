@@ -1,0 +1,138 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right, #007bff, #ff0000);
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(-45deg, #1e3c72, #2a5298, #ff0000, #007bff);
+  padding: 15px 20px;
+  color: #007bff;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  margin-right: 50px;
+}
+
+.navbar ul li {
+  display: inline;
+}
+
+.navbar ul li a {
+  color: #ff0000;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.navbar ul li a:hover {
+  color: #007bff;
+}
+
+/* Main Content */
+.content {
+  padding: 100px 20px;
+  max-width: 800px;
+  margin: auto;
+  position: relative;
+  z-index: 10;
+}
+.content h2 {
+  background: linear-gradient(-45deg, #1e3c72, #2a5298, #ff0000, #007bff);
+  color: #007bff;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+}
+/* Scroll to Top Button */
+.scroll-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #0044cc;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-top:hover {
+  background: #0033a0;
+}
+
+/* Animated Background */
+.animation-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.particle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: rgba(0, 68, 204, 0.3);
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: float 10s infinite linear;
+}
+
+/* Random positions for particles */
+.particle:nth-child(1) {
+  top: 10%;
+  left: 20%;
+  animation-duration: 12s;
+}
+.particle:nth-child(2) {
+  top: 40%;
+  left: 60%;
+  animation-duration: 10s;
+}
+.particle:nth-child(3) {
+  top: 70%;
+  left: 30%;
+  animation-duration: 8s;
+}
+.particle:nth-child(4) {
+  top: 20%;
+  left: 80%;
+  animation-duration: 14s;
+}
+.particle:nth-child(5) {
+  top: 80%;
+  left: 50%;
+  animation-duration: 9s;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-50px) scale(1.2);
+  }
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+}
