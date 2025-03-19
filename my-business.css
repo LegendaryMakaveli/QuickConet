@@ -218,11 +218,11 @@ button:hover {
   .business-form-container input {
     width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 10px 0 10px 0;
   }
   .business-form-container textarea {
     width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 20px 0 20px 0;
   }
 }
