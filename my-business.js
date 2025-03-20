@@ -2,7 +2,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const businessForm = document.getElementById("businessForm");
     const myBusinessList = document.getElementById("myBusinessList");
 
-    // Load existing businesses from localStorage on page load
+    // ✅ Firebase references
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    // ✅ Load existing businesses from Firestore
     loadMyBusinesses();
 
     businessForm.addEventListener("submit", function (e) {
@@ -17,84 +21,113 @@ document.addEventListener("DOMContentLoaded", function () {
         const businessWebsite = document.getElementById("businessWebsite").value.trim();
         const images = document.getElementById("businessImages").files;
 
-        let imageArray = [];
+        if (!businessName || !businessCategory || !businessAddress) {
+            alert("⚠️ Please fill in all required fields.");
+            return;
+        }
+
+        let imageUrls = [];
         let imagesProcessed = 0;
 
         if (images.length > 0) {
             for (let i = 0; i < images.length; i++) {
-                const reader = new FileReader();
-                reader.readAsDataURL(images[i]);
+                const imageFile = images[i];
+                const storageRef = storage.ref(`business_images/${Date.now()}_${imageFile.name}`);
+                const uploadTask = storageRef.put(imageFile);
 
-                reader.onload = function (e) {
-                    imageArray.push(e.target.result);
-                    imagesProcessed++;
+                uploadTask.on(
+                    "state_changed",
+                    null,
+                    (error) => console.error("❌ Image upload failed:", error),
+                    async () => {
+                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                        imageUrls.push(downloadURL);
+                        imagesProcessed++;
 
-                    if (imagesProcessed === images.length) {
-                        saveBusinessListing(imageArray);
+                        if (imagesProcessed === images.length) {
+                            saveBusinessToFirestore(imageUrls);
+                        }
                     }
-                };
+                );
             }
         } else {
-            saveBusinessListing(imageArray);
+            saveBusinessToFirestore(imageUrls);
         }
 
-        function saveBusinessListing(imageArray) {
-            let newBusiness = {
-                id: Date.now(), // Unique ID using timestamp
-                name: businessName,
-                category: businessCategory,
-                address: businessAddress,
-                details: businessDetails,
-                price: businessPrice,
-                whatsapp: businessWhatsApp,
-                website: businessWebsite,
-                images: imageArray
-            };
-
-            let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
-            businesses.push(newBusiness);
-            localStorage.setItem("businesses", JSON.stringify(businesses));
-
-            alert("✅ Business posted successfully!");
-            businessForm.reset();
-            loadMyBusinesses(); // Refresh list
+        function saveBusinessToFirestore(imageUrls) {
+            db.collection("businesses")
+                .add({
+                    name: businessName,
+                    category: businessCategory,
+                    address: businessAddress,
+                    details: businessDetails,
+                    price: businessPrice,
+                    whatsapp: businessWhatsApp,
+                    website: businessWebsite,
+                    images: imageUrls,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                })
+                .then(() => {
+                    alert("✅ Business posted successfully!");
+                    businessForm.reset();
+                    loadMyBusinesses(); // Refresh list
+                })
+                .catch((error) => console.error("❌ Error adding business:", error));
         }
     });
 
     function loadMyBusinesses() {
-        myBusinessList.innerHTML = "";
-        let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
+        myBusinessList.innerHTML = "<p>Loading businesses...</p>";
 
-        if (businesses.length === 0) {
-            myBusinessList.innerHTML = "<p>No business listings found.</p>";
-            return;
-        }
+        db.collection("businesses")
+            .orderBy("timestamp", "desc")
+            .onSnapshot((snapshot) => {
+                myBusinessList.innerHTML = "";
 
-        businesses.forEach((business) => {
-            let businessCard = document.createElement("div");
-            businessCard.classList.add("business-card");
+                if (snapshot.empty) {
+                    myBusinessList.innerHTML = "<p>No business listings found.</p>";
+                    return;
+                }
 
-            let firstImage = business.images.length > 0 ? business.images[0] : "placeholder.jpg";
+                snapshot.forEach((doc) => {
+                    let business = doc.data();
+                    let businessId = doc.id;
+                    let firstImage = business.images.length > 0 ? business.images[0] : "placeholder.jpg";
 
-            businessCard.innerHTML = `
-                <img src="${firstImage}" alt="Business Image" class="business-image">
-                <h3>${business.name}</h3>
-                <p><strong>Category:</strong> ${business.category}</p>
-                <p><strong>Price:</strong> ₦${business.price}</p>
-                <p><strong>Address:</strong> ${business.address}</p>
-                <button onclick="deleteBusiness(${business.id})">❌ Delete</button>
-            `;
+                    let businessCard = document.createElement("div");
+                    businessCard.classList.add("business-card");
 
-            myBusinessList.appendChild(businessCard);
-        });
+                    businessCard.innerHTML = `
+                        <img src="${firstImage}" alt="Business Image" class="business-image">
+                        <h3>${business.name}</h3>
+                        <p><strong>Category:</strong> ${business.category}</p>
+                        <p><strong>Price:</strong> ₦${business.price || "Not specified"}</p>
+                        <p><strong>Address:</strong> ${business.address}</p>
+                        <button onclick="deleteBusiness('${businessId}', ${JSON.stringify(business.images)})">❌ Delete</button>
+                    `;
+
+                    myBusinessList.appendChild(businessCard);
+                });
+            });
     }
 });
 
-// Function to delete a business from localStorage
-function deleteBusiness(businessId) {
-    let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
-    businesses = businesses.filter((business) => business.id !== businessId);
-    localStorage.setItem("businesses", JSON.stringify(businesses));
-    alert("❌ Business deleted successfully!");
-    location.reload();
+// ✅ Function to delete a business from Firestore and Storage
+function deleteBusiness(businessId, imageUrls) {
+    if (!confirm("Are you sure you want to delete this business?")) return;
+
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    db.collection("businesses")
+        .doc(businessId)
+        .delete()
+        .then(() => {
+            alert("❌ Business deleted successfully!");
+            imageUrls.forEach((url) => {
+                let imageRef = storage.refFromURL(url);
+                imageRef.delete().catch((error) => console.error("❌ Error deleting image:", error));
+            });
+        })
+        .catch((error) => console.error("❌ Error deleting business:", error));
 }

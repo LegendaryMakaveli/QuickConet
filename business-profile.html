@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Business Profile Settings</title>
     <link rel="stylesheet" href="business-profile.css" />
+    <!-- Firebase SDK (Latest Version) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+
+    <!-- Your Firebase Config File -->
+    <script src="firebase-config.js"></script>
   </head>
   <body>
     <div class="profile-container">
@@ -12,7 +21,7 @@
 
       <!-- Profile Picture -->
       <div class="profile-pic-container">
-        <img id="profilePic" src="default-avatar.png" alt="Profile Picture" />
+        <img id="profilePic" src="#" alt="Profile Picture" />
         <input type="file" id="profilePicInput" accept="image/*" />
       </div>
 
@@ -55,7 +64,7 @@
 
       <p><a href="businessdashboard.html">Back to Dashboard</a></p>
     </div>
-
+    <script src="firebase-config.js"></script>
     <script src="business-profile.js"></script>
   </body>
 </html>

@@ -1,78 +1,122 @@
- //  Show Bookings in the Calendar
+// ✅ Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyCp0HTLV-w6oy8W2Y333_yK3Q6uA9HucpE",
+  authDomain: "quickconet.firebaseapp.com",
+  projectId: "quickconet",
+  storageBucket: "quickconet.firebasestorage.app",
+  messagingSenderId: "760043432939",
+  appId: "1:760043432939:web:cac068874f7c8a24b307ae",
+  measurementId: "G-L36F8YWRR2"
+};
 
- document.addEventListener("DOMContentLoaded", function () {
-    var calendarEl = document.getElementById("calendar");
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+// ✅ Show Bookings in Calendar
+document.addEventListener("DOMContentLoaded", async function () {
+  var calendarEl = document.getElementById("calendar");
+
+  var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "dayGridMonth",
-      events: [
-        { title: "Lawyer Meeting", start: "2025-03-10T10:00:00" },
-        { title: "Mechanic Service", start: "2025-03-12T14:00:00" },
-      ],
-    });
-
-    calendar.render();
+      events: [],
   });
 
+  // Fetch bookings from Firebase
+  async function loadBookings() {
+      const bookingsSnapshot = await db.collection("bookings").get();
+      let events = [];
 
-document.addEventListener("DOMContentLoaded", function () {
-    let bookingForm = document.getElementById("bookingForm");
+      bookingsSnapshot.forEach((doc) => {
+          let data = doc.data();
+          events.push({
+              title: data.profession,
+              start: `${data.date}T${data.time}`,
+          });
+      });
 
-    if (!bookingForm) {
-        console.error("Booking form not found.");
-        return;
-    }
+      calendar.addEventSource(events);
+  }
 
-    bookingForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        // Get form values safely
-        let professionInput = document.getElementById("profession");
-        let dateInput = document.getElementById("date");
-        let timeInput = document.getElementById("time");
-
-        if (!professionInput || !dateInput || !timeInput) {
-            console.error("One or more input fields are missing.");
-            return;
-        }
-
-        let profession = professionInput.value;
-        let date = dateInput.value;
-        let time = timeInput.value;
-
-        if (!profession || !date || !time) {
-            alert("Please fill all fields.");
-            return;
-        }
-
-        // Save to localStorage for dashboard
-        let userBookings = JSON.parse(localStorage.getItem("userBookings")) || [];
-        userBookings.push({ profession, date, time });
-        localStorage.setItem("userBookings", JSON.stringify(userBookings));
-
-        window.location.href = "userdashboard.html"; // Redirect to dashboard
-    });
+  await loadBookings();
+  calendar.render();
 });
 
+// ✅ Handle Booking Form Submission
+document.addEventListener("DOMContentLoaded", function () {
+  let bookingForm = document.getElementById("bookingForm");
 
- //  Email Reminder
+  if (!bookingForm) {
+      console.error("Booking form not found.");
+      return;
+  }
 
- function sendEmailReminder(service, date, time, email) {
-    emailjs.init("YOUR_USER_ID"); // Replace with your EmailJS User ID
+  bookingForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
 
-    emailjs
+      let profession = document.getElementById("profession").value.trim();
+      let date = document.getElementById("date").value;
+      let time = document.getElementById("time").value;
+      let userEmail = document.getElementById("email").value.trim(); // Get user email
+
+      if (!profession || !date || !time || !userEmail) {
+          alert("Please fill all fields.");
+          return;
+      }
+
+      // ✅ Find the selected business in Firebase
+      const businessSnapshot = await db.collection("businesses")
+          .where("name", "==", profession)
+          .get();
+
+      if (businessSnapshot.empty) {
+          alert("Business not found!");
+          return;
+      }
+
+      let businessData;
+      let businessId;
+      businessSnapshot.forEach((doc) => {
+          businessId = doc.id;
+          businessData = doc.data();
+      });
+
+      // ✅ Save booking to Firebase
+      await db.collection("bookings").add({
+          profession,
+          date,
+          time,
+          businessId,
+          businessOwnerEmail: businessData.email, // Fetch business owner's email
+          userEmail,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // ✅ Send email notification to the business
+      sendEmailReminder(profession, date, time, businessData.email);
+
+      alert("✅ Booking successful! A confirmation email has been sent.");
+      bookingForm.reset();
+      window.location.href = "userdashboard.html"; // Redirect to dashboard
+  });
+});
+
+// ✅ Function to Send Email Notification
+function sendEmailReminder(service, date, time, businessEmail) {
+  emailjs.init("YOUR_USER_ID"); // Replace with your EmailJS User ID
+
+  emailjs
       .send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
-        service_name: service,
-        appointment_date: date,
-        appointment_time: time,
-        user_email: email,
+          service_name: service,
+          appointment_date: date,
+          appointment_time: time,
+          user_email: businessEmail, // Send to business owner
       })
       .then(
-        function (response) {
-          console.log("Email Sent!", response.status, response.text);
-        },
-        function (error) {
-          console.log("Failed to send email", error);
-        }
+          function (response) {
+              console.log("✅ Email Sent!", response.status, response.text);
+          },
+          function (error) {
+              console.log("❌ Failed to send email", error);
+          }
       );
-  }
+}

@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Dashboard - QuickConet</title>
     <link rel="stylesheet" href="user-dashboard.css" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
   </head>
   <body>
     <!-- Sidebar -->
@@ -59,73 +63,8 @@
         <!-- Dynamic booking list -->
       </section>
     </div>
-
+    <script src="firebase-config.js"></script>
     <script src="userdashboard.js"></script>
     <script src="auth.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Retrieve the logged-in user from localStorage
-        const user = JSON.parse(localStorage.getItem("loggedInUser"));
-
-        if (!user) {
-          alert("No user found. Redirecting to login page.");
-          window.location.href = "login.html";
-          return;
-        }
-
-        console.log("User Data Retrieved:", user);
-
-        // Display user details
-        document.getElementById("userName").textContent =
-          user.fullName || "User";
-      });
-      document
-        .getElementById("logoutButton")
-        .addEventListener("click", function () {
-          localStorage.removeItem("loggedInUser");
-          window.location.href = "login.html";
-        });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const dashboardProfilePic = document.getElementById(
-          "dashboardProfilePic"
-        );
-
-        // Get logged-in user
-        const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-        if (!loggedInUser) {
-          alert("No user logged in. Redirecting to login...");
-          window.location.href = "login.html";
-        }
-
-        // Load profile picture if exists
-        if (loggedInUser.profilePic) {
-          dashboardProfilePic.src = loggedInUser.profilePic;
-        }
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        let logoutTimer;
-
-        function resetTimer() {
-          clearTimeout(logoutTimer);
-          logoutTimer = setTimeout(logoutUser, 10 * 60 * 1000); // 10 min timeout
-        }
-
-        function logoutUser() {
-          // alert("Session expired! You have been logged out.");
-          localStorage.removeItem("loggedInUser");
-          window.location.href = "login.html";
-        }
-
-        // Reset timer on user activity
-        document.addEventListener("mousemove", resetTimer);
-        document.addEventListener("keypress", resetTimer);
-        document.addEventListener("click", resetTimer);
-        document.addEventListener("scroll", resetTimer);
-
-        resetTimer(); // Start timer when page loads
-      });
-    </script>
   </body>
 </html>

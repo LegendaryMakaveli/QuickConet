@@ -1,3 +1,19 @@
+// Initialize Firebase (Ensure Firebase is only initialized once)
+if (!firebase.apps.length) {
+    firebase.initializeApp({
+        apiKey: "AIzaSyCp0HTLV-w6oy8W2Y333_yK3Q6uA9HucpE",
+        authDomain: "quickconet.firebaseapp.com",
+        projectId: "quickconet",
+        storageBucket: "quickconet.firebasestorage.app",
+        messagingSenderId: "760043432939",
+        appId: "1:760043432939:web:cac068874f7c8a24b307ae",
+        measurementId: "G-L36F8YWRR2"
+    });
+}
+
+// Initialize Firestore
+const db = firebase.firestore();
+
 document.addEventListener("DOMContentLoaded", function () {
     const businessList = document.getElementById("businessList");
     const searchInput = document.getElementById("searchInput");
@@ -6,14 +22,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     loadBusinesses();
 
-    // Attach event listeners
+    // Attach event listeners for filtering
     searchInput.addEventListener("input", filterBusinesses);
     categoryFilter.addEventListener("change", filterBusinesses);
     priceFilter.addEventListener("change", filterBusinesses);
 
-    function loadBusinesses() {
-        let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
-        displayBusinesses(businesses);
+    async function loadBusinesses() {
+        try {
+            const snapshot = await db.collection("businesses").get();
+            let businesses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            displayBusinesses(businesses);
+        } catch (error) {
+            console.error("❌ Error loading businesses:", error);
+        }
     }
 
     function displayBusinesses(businesses) {
@@ -23,12 +44,12 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        businesses.forEach((business, index) => {
+        businesses.forEach((business) => {
             let businessCard = document.createElement("div");
             businessCard.classList.add("business-card");
 
             let firstImage = business.images && business.images.length > 0 ? business.images[0] : "placeholder.jpg";
-            let isFavorite = checkIfFavorite(index) ? "❤️" : "🤍";
+            let isFavorite = checkIfFavorite(business.id) ? "❤️" : "🤍";
 
             businessCard.innerHTML = `
                 <img src="${firstImage}" alt="Business Image" class="business-image">
@@ -36,8 +57,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 <p><strong>Category:</strong> ${business.category}</p>
                 <p><strong>Price:</strong> ₦${business.price}</p>
                 <p><strong>Address:</strong> ${business.address}</p>
-                <button onclick="viewBusinessDetails(${index})">View More</button>
-                <button class="fav-btn" data-id="${index}">${isFavorite}</button>
+                <button onclick="viewBusinessDetails('${business.id}')">View More</button>
+                <button class="fav-btn" data-id="${business.id}">${isFavorite}</button>
             `;
 
             businessList.appendChild(businessCard);
@@ -46,52 +67,76 @@ document.addEventListener("DOMContentLoaded", function () {
         // Attach event listeners for favorite buttons
         document.querySelectorAll(".fav-btn").forEach((btn) => {
             btn.addEventListener("click", function () {
-                toggleFavorite(parseInt(this.dataset.id));
+                toggleFavorite(this.dataset.id);
             });
         });
     }
 
-    function filterBusinesses() {
-        let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
-        let searchTerm = searchInput.value.toLowerCase();
-        let selectedCategory = categoryFilter.value;
-        let selectedPrice = priceFilter.value;
+    async function filterBusinesses() {
+        try {
+            let searchTerm = searchInput.value.toLowerCase();
+            let selectedCategory = categoryFilter.value;
+            let selectedPrice = priceFilter.value;
 
-        let filteredBusinesses = businesses.filter((business) => {
-            let matchesSearch = business.name.toLowerCase().includes(searchTerm) || business.category.toLowerCase().includes(searchTerm);
-            let matchesCategory = selectedCategory === "all" || business.category === selectedCategory;
-            let matchesPrice = selectedPrice === "all" || parseInt(business.price) <= parseInt(selectedPrice);
-            return matchesSearch && matchesCategory && matchesPrice;
-        });
+            let query = db.collection("businesses");
 
-        displayBusinesses(filteredBusinesses);
-    }
+            if (selectedCategory !== "all") {
+                query = query.where("category", "==", selectedCategory);
+            }
 
-    function checkIfFavorite(businessIndex) {
-        let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-        return favorites.includes(businessIndex);
-    }
+            if (selectedPrice !== "all") {
+                query = query.where("price", "<=", parseInt(selectedPrice));
+            }
 
-    function toggleFavorite(businessIndex) {
-        let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-        if (favorites.includes(businessIndex)) {
-            favorites = favorites.filter((id) => id !== businessIndex);
-        } else {
-            favorites.push(businessIndex);
+            const snapshot = await query.get();
+            let businesses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            businesses = businesses.filter((business) => {
+                return business.name.toLowerCase().includes(searchTerm) || business.category.toLowerCase().includes(searchTerm);
+            });
+
+            displayBusinesses(businesses);
+        } catch (error) {
+            console.error("❌ Error filtering businesses:", error);
         }
-        localStorage.setItem("favorites", JSON.stringify(favorites));
-        loadBusinesses(); // Refresh the list
+    }
+
+    async function checkIfFavorite(businessId) {
+        const userId = firebase.auth().currentUser?.uid; 
+        if (!userId) return false;
+
+        const doc = await db.collection("favorites").doc(userId).get();
+        return doc.exists && doc.data().favorites.includes(businessId);
+    }
+
+    async function toggleFavorite(businessId) {
+        const userId = firebase.auth().currentUser?.uid; 
+        if (!userId) {
+            alert("You need to log in to add favorites!");
+            return;
+        }
+
+        const favRef = db.collection("favorites").doc(userId);
+        const doc = await favRef.get();
+
+        let updatedFavorites = [];
+        if (doc.exists) {
+            updatedFavorites = doc.data().favorites.includes(businessId)
+                ? doc.data().favorites.filter(id => id !== businessId)
+                : [...doc.data().favorites, businessId];
+        } else {
+            updatedFavorites.push(businessId);
+        }
+
+        await favRef.set({ favorites: updatedFavorites }, { merge: true });
+        loadBusinesses(); // Refresh list
     }
 });
 
-function viewBusinessDetails(businessIndex) {
-    let businesses = JSON.parse(localStorage.getItem("businesses")) || [];
-    let selectedBusiness = businesses[businessIndex];
-
-    if (selectedBusiness) {
-        localStorage.setItem("selectedBusiness", JSON.stringify(selectedBusiness));
-        window.location.href = "business-details.html";
-    } else {
-        console.error("❌ Business not found!");
-    }
+/**
+ * ✅ Updated: Store business ID properly in localStorage and navigate to business-details.html
+ */
+function viewBusinessDetails(businessId) {
+    localStorage.setItem("currentBusinessId", businessId); // Store selected business ID
+    window.location.href = "business-details.html"; // Navigate to details page
 }

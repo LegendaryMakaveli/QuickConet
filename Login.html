@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QuickConet - Login</title>
     <link rel="stylesheet" href="login.css" />
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
   </head>
   <body>
     <!-- Home Button -->
@@ -25,13 +34,25 @@
 
       <!-- Toggle for Customer or Business Login -->
       <div class="toggle-container">
-        <button class="toggle-btn active" id="customerBtn">Customer</button>
-        <button class="toggle-btn" id="businessBtn">Business</button>
+        <button id="customerBtn" class="toggle-btn active">
+          Login as Customer
+        </button>
+        <button id="businessBtn" class="toggle-btn">Login as Business</button>
       </div>
 
       <form id="loginForm">
-        <input type="email" placeholder="Email" required />
-        <input type="password" placeholder="Password" required />
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter your email"
+          required
+        />
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+          required
+        />
         <button type="submit">Login</button>
 
         <!-- Forgot Password -->
@@ -53,7 +74,7 @@
         Don't have an account? <a href="signup.html">Sign up</a>
       </p>
     </div>
-
+    <script src="firebase-config.js"></script>
     <script src="login.js"></script>
     <script src="auth.js"></script>
   </body>
