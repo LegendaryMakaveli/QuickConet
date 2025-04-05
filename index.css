@@ -1,331 +1,349 @@
 /* General */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    text-align: center;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  text-align: center;
 }
 
 /* Navbar */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-    background: linear-gradient(to right, #007bff, #ff0000);
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: linear-gradient(to right, #007bff, #ff0000);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .logo img {
-    height: 50px;
+  height: 50px;
 }
 
 nav ul {
-    list-style: none;
-    display: flex;
-    gap: 20px;
+  list-style: none;
+  display: flex;
+  gap: 20px;
 }
 
 nav a {
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    transition: color 0.3s ease-in-out;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
 }
 
 nav a:hover {
-    color: #ffdd57;
+  color: #ffdd57;
 }
 
 /* Hero Section */
 .hero {
-    position: relative;
-    color: white;
-    padding: 120px 20px;
-    overflow: hidden;
+  position: relative;
+  color: white;
+  padding: 120px 20px;
+  overflow: hidden;
 }
 
 /* Background Animation */
 .animated-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(-45deg, #1e3c72, #2a5298, #ff0000, #007bff);
-    background-size: 400% 400%;
-    animation: gradientMove 6s ease infinite;
-    z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(-45deg, #acf308, #2a5298, #ff0000, #007bff);
+  background-size: 400% 400%;
+  animation: gradientMove 6s ease infinite;
+  z-index: -1;
 }
 
 /* Text Animations */
 .hero h1 {
-    font-size: 40px;
-    opacity: 0;
-    animation: slideDown 1.5s ease-in-out forwards;
+  font-size: 40px;
+  opacity: 0;
+  animation: slideDown 5s ease-in-out forwards;
 }
 
 .hero p {
-    font-size: 20px;
-    margin: 10px 0;
-    opacity: 0;
-    animation: fadeIn 2s ease-in-out forwards 0.5s;
+  font-size: 20px;
+  margin: 10px 0;
+  opacity: 0;
+  animation: fadeIn 3s ease-in-out forwards 0.5s;
 }
 
 .hero .btn {
-    display: inline-block;
-    background: rgb(57, 53, 53);
-    color: white;
-    padding: 12px 24px;
-    text-decoration: none;
-    margin-top: 20px;
-    font-size: 18px;
-    border-radius: 8px;
-    opacity: 0;
-    animation: slideUp 1.5s ease-in-out forwards 1s;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  display: inline-block;
+  background: rgb(57, 53, 53);
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  margin-top: 20px;
+  font-size: 18px;
+  border-radius: 8px;
+  opacity: 0;
+  animation: slideUp 5s ease-in-out forwards 1s;
+  transition: transform 3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 /* Button Hover */
 .hero .btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 4px 10px rgba(255, 0, 0, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0px 4px 10px rgba(255, 0, 0, 0.5);
 }
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-30px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
-
 
 /* How It Works Section */
 
 .how-it-works {
-    padding: 80px 20px;
-    text-align: center;
-    background: #f9f9f9;
+  padding: 80px 20px;
+  text-align: center;
+  background: #f9f9f9;
 }
 
 .how-it-works h2 {
-    font-size: 36px;
-    margin-bottom: 30px;
-    opacity: 0;
-    animation: fadeIn 1.5s ease-in-out forwards;
+  font-size: 36px;
+  margin-bottom: 30px;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-in-out forwards;
 }
 
 /* Steps */
 .steps-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
 }
 
 .step {
-    background: white;
-    padding: 20px;
-    width: 250px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    opacity: 0;
-    animation: slideUp 1.5s ease-in-out forwards 0.5s;
+  background: white;
+  padding: 20px;
+  width: 250px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  opacity: 0;
+  animation: slideUp 1.5s ease-in-out forwards 0.5s;
 }
 
 .step img {
-    width: 60px;
-    margin-bottom: 15px;
-    transition: transform 0.3s ease-in-out;
+  width: 60px;
+  margin-bottom: 15px;
+  transition: transform 0.3s ease-in-out;
 }
 
 .step h3 {
-    font-size: 22px;
-    margin-bottom: 10px;
+  font-size: 22px;
+  margin-bottom: 10px;
 }
 
 .step p {
-    font-size: 16px;
-    color: #555;
+  font-size: 16px;
+  color: #555;
 }
 
 /* Hover Effects */
 .step:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-10px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .step:hover img {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
-
-
 
 /* Features Section */
 
 .features {
-    padding: 80px 20px;
-    text-align: center;
-    background: white;
+  padding: 80px 20px;
+  text-align: center;
+  background: white;
 }
 
 .features h2 {
-    font-size: 36px;
-    margin-bottom: 30px;
-    opacity: 0;
-    animation: fadeIn 1.5s ease-in-out forwards;
+  font-size: 36px;
+  margin-bottom: 30px;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-in-out forwards;
 }
 
 /* Features Grid */
 .features-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
 }
 
 .feature {
-    background: #f9f9f9;
-    padding: 20px;
-    width: 250px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    opacity: 0;
-    animation: slideUp 1.5s ease-in-out forwards 0.5s;
+  background: #f9f9f9;
+  padding: 20px;
+  width: 250px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  opacity: 0;
+  animation: slideUp 1.5s ease-in-out forwards 0.5s;
 }
 
 .feature img {
-    width: 60px;
-    margin-bottom: 15px;
-    transition: transform 0.3s ease-in-out;
+  width: 60px;
+  margin-bottom: 15px;
+  transition: transform 0.3s ease-in-out;
 }
 
 .feature h3 {
-    font-size: 22px;
-    margin-bottom: 10px;
+  font-size: 22px;
+  margin-bottom: 10px;
 }
 
 .feature p {
-    font-size: 16px;
-    color: #555;
+  font-size: 16px;
+  color: #555;
 }
 
 /* Hover Effects */
 .feature:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-10px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .feature:hover img {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
-
 
 /* Testimonials Section */
 
 .testimonials {
-    padding: 80px 20px;
-    text-align: center;
-    background: #b6a6f1;
+  padding: 80px 20px;
+  text-align: center;
+  background: #b6a6f1;
 }
 
 .testimonials h2 {
-    font-size: 36px;
-    margin-bottom: 30px;
-    opacity: 0;
-    animation: fadeIn 1.5s ease-in-out forwards;
+  font-size: 36px;
+  margin-bottom: 30px;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-in-out forwards;
 }
 
 /* Testimonials Grid */
 .testimonials-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
 }
 
 /* Individual Testimonial */
 .testimonial {
-    background: white;
-    padding: 20px;
-    width: 300px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    text-align: center;
+  background: white;
+  padding: 20px;
+  width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  text-align: center;
 }
 
 .testimonial img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin-bottom: 15px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 15px;
 }
 
 .testimonial h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
+  font-size: 20px;
+  margin-bottom: 10px;
 }
 
 .testimonial p {
-    font-size: 16px;
-    color: #555;
+  font-size: 16px;
+  color: #555;
 }
 
 /* Submission Form */
 .testimonial-form {
-    margin-top: 40px;
-    padding: 20px;
-    background: white;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    width: 100%;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+  margin-top: 40px;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .testimonial-form h3 {
-    font-size: 22px;
-    margin-bottom: 10px;
+  font-size: 22px;
+  margin-bottom: 10px;
 }
 
 .testimonial-form input,
 .testimonial-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .testimonial-form button {
-    padding: 10px 15px;
-    background: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  padding: 10px 15px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .testimonial-form button:hover {
-    background: #0056b3;
+  background: #0056b3;
 }
